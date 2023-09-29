@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import {
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from 'react-native';
+import { MotiView } from 'moti';
+
+import icon_clear from './assets/clear.png';
 
 const gap = 24;
 const flatListTopMargin = 16;
@@ -15,8 +19,6 @@ const passCodeLength = 6;
 
 export default function App() {
   const [numArray, setNumArray] = useState([]);
-
-  console.log(numArray);
 
   const { width } = useWindowDimensions();
   const buttonWidth = width / 5;
@@ -32,27 +34,34 @@ export default function App() {
         style={{
           alignItems: 'center',
           flexDirection: 'row',
+          height,
           justifyContent: 'center',
           width: passCodeContainerWidth,
-          height: buttonWidth * 0.6,
         }}>
-        {[...Array(passCodeLength).keys()].map(index => (
-          <View
-            key={index}
-            style={{
-              borderRadius: buttonWidth / 2,
-              width: buttonWidth / 2,
-              height: typeof numArray[index] === 'number' ? buttonWidth / 2 : 4,
-              margin: gap / 4,
-              backgroundColor: '#000',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Text style={{ color: '#666', fontSize: 16 }}>
-              {numArray[index]}
-            </Text>
-          </View>
-        ))}
+        {[...Array(passCodeLength).keys()].map(index => {
+          const isNum = typeof numArray[index] === 'number';
+          return (
+            <MotiView
+              key={index}
+              style={{
+                borderRadius: buttonWidth / 2,
+                width: buttonWidth / 2,
+                margin: gap / 4,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              animate={{
+                backgroundColor: isNum ? '#fff' : '#aaa',
+                height: isNum ? height / 2 : 4,
+                marginBottom: isNum ? buttonWidth / 2 : 0,
+              }}
+              transition={{
+                duration: 100,
+                type: 'timing',
+              }}
+            />
+          );
+        })}
       </View>
     );
   };
@@ -85,11 +94,21 @@ export default function App() {
             height,
             width: buttonWidth,
             borderRadius: height / 2,
+            borderColor: '#929292',
             alignItems: 'center',
             justifyContent: 'center',
+            ...(item !== '' ? { backgroundColor: '#218120' } : {}),
             borderWidth: typeof item === 'number' ? 3 : 0,
           }}>
-          <Text style={{ fontSize }}>{item}</Text>
+          {item !== 'DEL' ? (
+            <Text style={{ fontSize, color: 'white' }}>{item}</Text>
+          ) : (
+            <Image
+              source={icon_clear}
+              style={{ height: height / 2, width: buttonWidth / 2 }}
+              tintColor={'white'}
+            />
+          )}
         </TouchableOpacity>
       )}
       style={{ flexGrow: 0, marginTop: flatListTopMargin }}
@@ -107,9 +126,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#116530',
     flex: 1,
     justifyContent: 'center',
-    marginTop: 36,
   },
 });
